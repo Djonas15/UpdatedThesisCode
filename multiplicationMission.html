@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication Mission</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #ffff00;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        #game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #question, #result {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Multiplication Mission!</h1>
+    <img src="startimage.png" alt="Multiplication Mission Logo">
+    <p>This was created to test your multiplication skills with a fun quiz game. Click the start button to begin!</p>
+    <button id="start-btn">Start Game</button>
+
+    <div id="game-container">
+        <p id="question"></p>
+        <input type="number" id="answer" placeholder="Your answer" />
+        <button id="submit-answer">Submit</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        const startBtn = document.getElementById('start-btn');
+        const gameContainer = document.getElementById('game-container');
+        const questionEl = document.getElementById('question');
+        const answerEl = document.getElementById('answer');
+        const resultEl = document.getElementById('result');
+        const submitAnswerBtn = document.getElementById('submit-answer');
+
+        let number;
+        let correctAnswers = 0;
+        let questionCount = 0;
+        const totalQuestions = 7;
+        let multipliers = []; // Array to store unique random multipliers
+
+        startBtn.addEventListener('click', () => {
+            number = parseInt(prompt("Pick a number between 1 and 10 to test your knowledge!"));
+            if (isNaN(number) || number < 1 || number > 10) {
+                alert("Invalid input. Please restart and enter a number between 1 and 10.");
+                return;
+            }
+
+            // Generate unique random multipliers
+            multipliers = generateUniqueRandomNumbers(1, 10, totalQuestions);
+
+            startBtn.style.display = 'none';
+            gameContainer.style.display = 'flex';
+            askQuestion();
+        });
+
+        submitAnswerBtn.addEventListener('click', () => {
+            const userAnswer = parseInt(answerEl.value);
+            const quizNumber = multipliers[questionCount]; // Use pre-generated multiplier
+            const correctAnswer = number * quizNumber;
+
+            if (userAnswer === correctAnswer) {
+                alert("Correct! Good job");
+                correctAnswers++;
+                
+            } else {
+                alert(`Incorrect. The correct answer is ${correctAnswer}.`);
+                
+            }
+
+            questionCount++;
+            answerEl.value = '';
+            if (questionCount < totalQuestions) {
+                askQuestion();
+            } else {
+                endGame();
+            }
+        });
+
+        function askQuestion() {
+            const quizNumber = multipliers[questionCount]; // Use pre-generated multiplier
+            questionEl.textContent = `What is ${number} x ${quizNumber}?`;
+            resultEl.textContent = '';
+        }
+
+        function endGame() {
+            questionEl.textContent = `Game Over! You scored ${correctAnswers} out of ${totalQuestions}.`;
+            submitAnswerBtn.style.display = 'none';
+            const replayBtn = document.createElement('button');
+            replayBtn.textContent = 'Play Again';
+            replayBtn.addEventListener('click', () => location.reload());
+            gameContainer.appendChild(replayBtn);
+        }
+
+        function generateUniqueRandomNumbers(min, max, count) {
+            const numbers = [];
+            for (let i = min; i <= max; i++) {
+                numbers.push(i);
+            }
+
+            // Shuffle the array
+            for (let i = numbers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+            }
+
+            // Return the first `count` numbers
+            return numbers.slice(0, count);
+        }
+    </script>
+</body>
+</html>
+
